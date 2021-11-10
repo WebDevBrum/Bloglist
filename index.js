@@ -1,22 +1,17 @@
 require("dotenv").config();
 const http = require("http");
 const express = require("express");
+const mongoose = require("mongoose");
 
 const app = express();
 const morgan = require("morgan");
 const cors = require("cors");
-const mongoose = require("mongoose");
 
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-});
+const config = require("./utils/config");
 
-const Blog = mongoose.model("Blog", blogSchema);
+const Blog = require("./models/blog");
 
-const mongoUrl = process.env.MONGODB_URI;
+const mongoUrl = config.MONGODB_URI;
 mongoose
   .connect(mongoUrl)
   .then((result) => {
@@ -80,7 +75,6 @@ app.post("/api/blogs", (request, response) => {
   });
 });
 
-const PORT = 3003;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`);
 });
