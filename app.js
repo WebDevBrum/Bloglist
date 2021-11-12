@@ -1,18 +1,35 @@
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
 const mongoose = require("mongoose");
+const config = require("./utils/config");
+const blogsRouter = require("./controllers/blogs");
+const middleware = require("./utils/middleware");
 
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-});
+const mongoUrl = config.MONGODB_URI;
 
-blogSchema.set("toJSON", {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
-  },
-});
+mongoose
+  .connect(mongoUrl)
+  .then((result) => {
+    console.log("connected to MongoDB");
+  })
+  .catch((error) => {
+    console.log("error connecting to MongoDB:", error.message);
+  });
 
-module.exports = mongoose.model("Blog", blogSchema);
+app.use(
+  middleware.morgan(
+    ":method :url :status :res[content-length] - :response-time ms :data"
+  )
+);
+
+app.use(cors());
+app.use(express.json());
+app.use("/api/blogs", blogsRouter); // Route handling via controller
+
+app.use(middleware.requestLogger);
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
+
+module.exports = app;
