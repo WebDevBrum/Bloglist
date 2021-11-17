@@ -1,10 +1,16 @@
 const dummy = (blogs) => 1;
 
-module.exports = {
-  dummy,
+const totalLikes = (blogs) => {
+  let count = 0;
+
+  blogs.forEach((blog) => {
+    count += blog.likes;
+  });
+
+  return count;
 };
 
-const totalLikes = (blogs) => {
-  const count = 0;
-  // for each??
+module.exports = {
+  dummy,
+  totalLikes,
 };
